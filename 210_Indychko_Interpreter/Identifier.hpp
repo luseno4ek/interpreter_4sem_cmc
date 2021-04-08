@@ -1,5 +1,5 @@
-#ifndef Identificator_hpp
-#define Identificator_hpp
+#ifndef Identifier_hpp
+#define Identifier_hpp
 
 #include "Lexeme.hpp"
 
@@ -36,7 +36,6 @@ public:
     TableIdent(int max_size);
     ~TableIdent();
     Ident& operator[] (int k);
-    ///function returns a position of identificator with name buf from the table
     int add(const char* buf);
 };
 
