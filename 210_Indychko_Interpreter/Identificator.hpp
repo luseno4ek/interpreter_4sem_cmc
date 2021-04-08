@@ -14,7 +14,7 @@ public:
     Ident();
     ~Ident();
     char* get_name();
-    void set_name(char* buf);
+    void set_name(const char* buf);
     TypeOfLex get_type();
     void set_type(TypeOfLex _type);
     int get_value();
@@ -25,8 +25,19 @@ public:
     void set_assign();
 };
 
+/*/////////////////////////////////////////*/
+
 class TableIdent {
-    
+private:
+    Ident* table;
+    int size;
+    int last_pos;
+public:
+    TableIdent(int max_size);
+    ~TableIdent();
+    Ident& operator[] (int k);
+    ///function returns a position of identificator with name buf from the table
+    int add(const char* buf);
 };
 
 #endif /* Identificator_hpp */

@@ -1,5 +1,5 @@
 #include "Identificator.hpp"
-#include <string>
+#include <cstring>
 
 Ident::Ident()
 : declare(false), assign(false) {}
@@ -8,10 +8,47 @@ Ident::~Ident() { delete[] name; }
 
 char* Ident::get_name() { return name; }
 
-void Ident::set_name(char *buf) {
+void Ident::set_name(const char *buf) {
     name = new char[strlen(buf) + 1];
     strcpy(name, buf);
 }
 
 TypeOfLex Ident::get_type() { return type; }
+
+void Ident::set_type(TypeOfLex _type) { type = _type; }
+
+int Ident::get_value() { return value; }
+
+void Ident::set_value(int _value) { value = _value; }
+
+bool Ident::get_declare() { return declare; }
+
+void Ident::set_declare() { declare = true; }
+
+bool Ident::get_assign() { return assign; }
+
+void Ident::set_assign() { assign = true; }
+
+/*/////////////////////////////////////////*/
+
+TableIdent::TableIdent(int max_size)
+: last_pos(1), size(max_size)
+{
+    table = new Ident[size];
+}
+
+TableIdent::~TableIdent() { delete[] table; }
+
+Ident& TableIdent::operator[](int k) { return table[k]; }
+
+int TableIdent::add(const char *buf) {
+    for(int j = 1; j < last_pos; j++) {
+        if(strcmp(table[j].get_name(), buf) == 0) {
+            return j;               // we have found an identificator with the same name
+        }                           // => return it's position
+    }
+    table[last_pos].set_name(buf);  // we haven't found matching identificator
+    last_pos++;                     // => we create a new one
+    return last_pos - 1;
+}
 
