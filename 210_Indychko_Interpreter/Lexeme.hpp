@@ -1,8 +1,6 @@
 #ifndef Lexeme_hpp
 #define Lexeme_hpp
 
-#include <stdio.h>
-
 enum TypeOfLex {
     LEX_NULL,
     LEX_PROGRAM,
