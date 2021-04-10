@@ -10,10 +10,8 @@ private:
         INIT,
         ID,
         NUMBER,
-        COMMAND,
-        ALE,
-        DELIM,
-        NEQ
+        DOUBLESYMBOL, // !=, <=, >=, ==
+        SYMBOL
     };
     static const char* ServiceWords[];
     static const char* LimSymbols[];
@@ -29,9 +27,13 @@ private:
     ///adds char c to the top of buffer
     void add();
     ///looks if _buf is in list and returns its position (or 0)
-    int look(const char* _buf, char** list);
+    int look(const char* _buf, const char** list);
     ///gets char c from FILE* fp
     void gc();
+    ///returns 1 if c from [a,z]
+    bool isalpha(char c);
+    ///returns 1 if c from [0,9]
+    bool isdigit(char c);
 public:
     Scanner(const char* program);
     Lex get_lex();
@@ -42,19 +44,20 @@ public:
 const char* Scanner::ServiceWords[] = {
     ""
     "program",
-    "int",
     "string",
+    "int",
     "if",
+    "then",
     "else",
-    "while",
     "do",
+    "while",
     "false",
     "true",
+    "not",
+    "or",
+    "and",
     "read",
     "write",
-    "not",
-    "and",
-    "or",
     "continue",
     "boolean",
     NULL
@@ -64,7 +67,8 @@ const char* Scanner::ServiceWords[] = {
 
 const char* Scanner::LimSymbols[] = {
     ""
-    "*",
+    "@",
+    "*",  
     "/",
     "+",
     "-",
@@ -92,33 +96,26 @@ TableIdent Identifiers(100);
 TypeOfLex Scanner::words[] = {
     LEX_NULL,
     LEX_PROGRAM,
-    LEX_END, LEX_BEGIN,
     LEX_STRING, LEX_INT,
     LEX_IF, LEX_THEN, LEX_ELSE,
     LEX_DO, LEX_WHILE,
     LEX_FALSE, LEX_TRUE,
     LEX_NOT, LEX_OR, LEX_AND,
     LEX_READ, LEX_WRITE,
+    LEX_CONTIN, LEX_BOOL,
     LEX_NULL
 };
 
 /*/////////////////////////////////////////*/
 
 TypeOfLex Scanner::symbols[] = {
+    LEX_NULL,
     LEX_FIN,
-    LEX_SEMICOLON, // ;
-    LEX_COMMA,     // ,
-    LEX_COLON,     // :
-  //  LEX_ASSIGN,
-  //  LEX_LPAREN,
-  //  LEX_RPAREN,
-  //  LEX_EQ,
-  //  LEX_LSS, LEX_GTR,
-    LEX_PLUS, LEX_MINUS,
-  //  LEX_TIMES,
-  //  LEX_SLASH, LEX_LEQ,
-    LEX_NEQ,
-  //  LEX_GEQ,
+    LEX_MULTIPLY, LEX_DIVISION, LEX_PLUS,
+    LEX_MINUS, LEX_LESS, LEX_GR, LEX_LEQ,
+    LEX_GEQ, LEX_EQ, LEX_NEQ, LEX_ASSIGN,
+    LEX_SEMICOLON, LEX_COMMA, LEX_COLON,
+    LEX_LPAREN, LEX_RPAREN,
     LEX_NULL
 };
 

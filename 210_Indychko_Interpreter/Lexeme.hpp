@@ -4,27 +4,18 @@
 enum TypeOfLex {
     LEX_NULL,
     LEX_PROGRAM,
-    LEX_END, LEX_BEGIN,
     LEX_STRING, LEX_INT,
     LEX_IF, LEX_THEN, LEX_ELSE,
     LEX_DO, LEX_WHILE,
     LEX_FALSE, LEX_TRUE,
     LEX_NOT, LEX_OR, LEX_AND,
     LEX_READ, LEX_WRITE,
+    LEX_CONTIN, LEX_BOOL,
     LEX_FIN,
-    LEX_SEMICOLON, // ;
-    LEX_COMMA,     // ,
-    LEX_COLON,     // :
-  //  LEX_ASSIGN,
-  //  LEX_LPAREN,
-  //  LEX_RPAREN,
-  //  LEX_EQ,
-  //  LEX_LSS, LEX_GTR,
-    LEX_PLUS, LEX_MINUS,
-  //  LEX_TIMES,
-  //  LEX_SLASH, LEX_LEQ,
-    LEX_NEQ,
-  //  LEX_GEQ,
+    LEX_MULTIPLY, LEX_DIVISION, LEX_PLUS,
+    LEX_MINUS, LEX_LESS, LEX_GR, LEX_LEQ,
+    LEX_GEQ, LEX_EQ, LEX_NEQ, LEX_ASSIGN, LEX_SEMICOLON,
+    LEX_COMMA, LEX_COLON, LEX_LPAREN, LEX_RPAREN,
     LEX_NUM,       // number
     LEX_ID         // identificator
 };
