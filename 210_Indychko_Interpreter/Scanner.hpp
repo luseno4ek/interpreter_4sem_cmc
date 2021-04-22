@@ -10,6 +10,7 @@ private:
         INIT,
         ID,
         NUMBER,
+        STRING, 
         DOUBLESYMBOL, // !=, <=, >=, ==
         SYMBOL
     };
@@ -46,11 +47,15 @@ const char* Scanner::ServiceWords[] = {
     "program",
     "string",
     "int",
+    "boolean",
+    "struct",
     "if",
     "then",
     "else",
     "do",
     "while",
+    "break",
+    "goto",
     "false",
     "true",
     "not",
@@ -58,8 +63,6 @@ const char* Scanner::ServiceWords[] = {
     "and",
     "read",
     "write",
-    "continue",
-    "boolean",
     NULL
 };
 
@@ -68,6 +71,8 @@ const char* Scanner::ServiceWords[] = {
 const char* Scanner::LimSymbols[] = {
     ""
     "@",
+    "{",
+    "}",
     "*",  
     "/",
     "+",
@@ -90,19 +95,20 @@ const char* Scanner::LimSymbols[] = {
 /*/////////////////////////////////////////*/
 
 TableIdent Identifiers(100);
+TableString StringsData;
 
 /*/////////////////////////////////////////*/
 
 TypeOfLex Scanner::words[] = {
     LEX_NULL,
     LEX_PROGRAM,
-    LEX_STRING, LEX_INT,
+    LEX_STRING, LEX_INT, LEX_BOOL, LEX_STRUCT,
     LEX_IF, LEX_THEN, LEX_ELSE,
     LEX_DO, LEX_WHILE,
+    LEX_BREAK, LEX_GOTO,
     LEX_FALSE, LEX_TRUE,
     LEX_NOT, LEX_OR, LEX_AND,
     LEX_READ, LEX_WRITE,
-    LEX_CONTIN, LEX_BOOL,
     LEX_NULL
 };
 
@@ -110,7 +116,7 @@ TypeOfLex Scanner::words[] = {
 
 TypeOfLex Scanner::symbols[] = {
     LEX_NULL,
-    LEX_FIN,
+    LEX_FIN, LEX_BEGIN, LEX_END,
     LEX_MULTIPLY, LEX_DIVISION, LEX_PLUS,
     LEX_MINUS, LEX_LESS, LEX_GR, LEX_LEQ,
     LEX_GEQ, LEX_EQ, LEX_NEQ, LEX_ASSIGN,

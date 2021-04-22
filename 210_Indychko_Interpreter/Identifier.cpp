@@ -1,5 +1,6 @@
 #include "Identifier.hpp"
 #include <cstring>
+#include <cstdlib>
 
 Ident::Ident()
 : declare(false), assign(false) {}
@@ -52,3 +53,22 @@ int TableIdent::add(const char *buf) {
     return last_pos - 1;
 }
 
+/*/////////////////////////////////////////*/
+
+TableString::TableString()
+: table(nullptr), size(0) {}
+
+TableString::~TableString() {
+    if(table != nullptr) {
+        free(table);
+    }
+}
+
+int TableString::add(const char *buf) {
+    size++;
+    table = (char**)realloc(table, size);
+    table[size - 1] = new char[strlen(buf) + 1];
+    strcpy(table[size - 1], buf);
+    table[size] = nullptr;
+    return size - 1;
+}

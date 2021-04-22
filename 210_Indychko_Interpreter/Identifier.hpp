@@ -39,4 +39,16 @@ public:
     int add(const char* buf);
 };
 
+/*/////////////////////////////////////////*/
+
+class TableString {
+private:
+    char** table;
+    int size;
+public:
+    TableString();
+    ~TableString();
+    int add(const char* buf);
+};
+
 #endif /* Identificator_hpp */

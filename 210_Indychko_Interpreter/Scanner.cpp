@@ -53,6 +53,8 @@ Lex Scanner::get_lex() {
                     curr_state = DOUBLESYMBOL;
                 } else if(c == '@') {
                     return Lex(LEX_FIN);
+                } else if(c == '"') {
+                    curr_state = STRING;
                 } else {
                     curr_state = SYMBOL;
                     break;
@@ -98,6 +100,14 @@ Lex Scanner::get_lex() {
                 } else {
                     throw c;
                 }
+                break;
+            case STRING:
+                while(c != '"') {
+                    add();
+                    gc();
+                }
+                j = StringsData.add(buf);
+                return Lex(LEX_STRING_DATA, j);
                 break;
         }
     } while(true);
