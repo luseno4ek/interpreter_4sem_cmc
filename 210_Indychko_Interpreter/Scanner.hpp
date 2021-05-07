@@ -52,7 +52,7 @@ const char* Scanner::ServiceWords[] = {
     "if",
     "then",
     "else",
-    "do",
+    "for",
     "while",
     "break",
     "goto",
@@ -95,6 +95,7 @@ const char* Scanner::LimSymbols[] = {
 /*/////////////////////////////////////////*/
 
 TableIdent Identifiers(100);
+TableIdent Labels(100);
 TableString StringsData;
 
 /*/////////////////////////////////////////*/
@@ -104,7 +105,7 @@ TypeOfLex Scanner::words[] = {
     LEX_PROGRAM,
     LEX_STRING, LEX_INT, LEX_BOOL, LEX_STRUCT,
     LEX_IF, LEX_THEN, LEX_ELSE,
-    LEX_DO, LEX_WHILE,
+    LEX_FOR, LEX_WHILE,
     LEX_BREAK, LEX_GOTO,
     LEX_FALSE, LEX_TRUE,
     LEX_NOT, LEX_OR, LEX_AND,

@@ -35,6 +35,27 @@ bool Parser::is_lex_comparison() {
     return (t == LEX_EQ || t == LEX_NEQ || t == LEX_GEQ || t == LEX_LEQ || t == LEX_LESS || t == LEX_GR);
 }
 
+void Parser::check_lparen() {
+    if(curr_type != LEX_LPAREN) {
+        throw curr_lex;
+    }
+    get_lex();
+}
+
+void Parser::check_rparen() {
+    if(curr_type != LEX_RPAREN) {
+        throw curr_lex;
+    }
+    get_lex();
+}
+
+void Parser::check_semicolon() {
+    if(curr_type != LEX_SEMICOLON) {
+        throw curr_lex;
+    }
+    get_lex();
+}
+
 /*/////////////////////////////////////////*/
 
 void Parser::declareID(TypeOfLex type) {
@@ -133,6 +154,12 @@ void Parser::check_is_expression_bool() {
     }
 }
 
+void Parser::check_id_for_read() {
+    if(!Identifiers[curr_value].get_declare()) {
+        throw "Identifier is not declared!";
+    }
+}
+
 /*/////////////////////////////////////////*/
 
 
@@ -223,22 +250,85 @@ void Parser::VAR(TypeOfLex type) {
 void Parser::OPERATORS() {
     if(curr_type == LEX_IF) {
         get_lex();
-        if(curr_type != LEX_LPAREN) {
-            throw curr_lex;
-        }
-        get_lex();
+        check_lparen();
         EXPRESSION();
         check_is_expression_bool();
-        if(curr_type != LEX_RPAREN) {
-            throw curr_lex;
-        }
-        get_lex();
+        check_rparen();
         OPERATORS();
         if(curr_type != LEX_ELSE) {
-            throw curr_lex;
+            throw "'else' expected!";
         }
         get_lex();
         OPERATORS();
+    } else if(curr_type == LEX_WHILE) {
+        get_lex();
+        check_lparen();
+        EXPRESSION();
+        check_is_expression_bool();
+        check_rparen();
+        OPERATORS();
+        if(curr_type == LEX_BREAK) {
+            get_lex();
+            check_semicolon();
+        }
+    } else if(curr_type == LEX_FOR) {
+        get_lex();
+        check_lparen();
+        for(int i = 0; i < 3; i++) {
+            if(curr_type == LEX_SEMICOLON) {
+                get_lex();
+            } else {
+                EXPRESSION();
+                check_semicolon();
+            }
+        }
+        OPERATORS();
+    } else if(curr_type == LEX_READ) {
+        get_lex();
+        check_lparen();
+        if(curr_type != LEX_ID) {
+            throw curr_lex;
+        }
+        check_id_for_read();
+        get_lex();
+        check_rparen();
+        check_semicolon();
+    } else if(curr_type == LEX_WRITE) {
+        get_lex();
+        check_lparen();
+        EXPRESSION();
+        while(curr_type == LEX_COMMA) {
+            get_lex();
+            EXPRESSION();
+        }
+        check_rparen();
+        check_semicolon();
+    } else if(curr_type == LEX_BEGIN) {
+        get_lex();
+        OPERATORS();
+        if(curr_type != LEX_END) {
+            throw "'}' expected!";
+        }
+    } else if(curr_type == LEX_GOTO) {
+        get_lex();
+        if(curr_type != LEX_ID) {
+            throw "Identificator expected!";
+        }
+        if(Identifiers[curr_value].get_declare()) {
+            throw "Label is declared as variable!";
+        }
+        get_lex();
+        check_semicolon();
+    } else if(curr_type == LEX_ID) {
+        get_lex();
+        if(curr_type != LEX_COLON) {
+            throw "':' expected!";
+        }
+        get_lex();
+        OPERATORS();
+    } else {
+        EXPRESSION();
+        check_semicolon();
     }
 }
 

@@ -38,11 +38,15 @@ private:
     void check_operands_for_summation();
     void check_operands_for_comparison();
     void check_is_expression_bool();
+    void check_id_for_read();
 //helpful procedures:
     bool is_lex_type();
     bool is_lex_multiplication();
     bool is_lex_summation();
     bool is_lex_comparison();
+    void check_rparen();
+    void check_lparen();
+    void check_semicolon();
 public:
     void analysis();
 };
