@@ -39,6 +39,13 @@ void Parser::check_types_equality() {
     }
 }
 
+void Parser::check_operand_for_not() {
+    if(st_lex.pop() != LEX_BOOL) {
+        throw "Wrong type for operation 'not'!";
+    }
+    st_lex.push(LEX_BOOL);
+}
+
 /*/////////////////////////////////////////*/
 
 
@@ -53,11 +60,11 @@ void Parser::PROG() {
     } else {
         throw curr_lex;
     }
-    DEFS();
-    
+    DEFINITIONS();
+    OPERATORS();
 }
 
-void Parser::DEFS() {
+void Parser::DEFINITIONS() {
     st_int.reset();
     while(is_lex_type(curr_type)) {
         if(curr_type == LEX_INT) {
@@ -78,7 +85,9 @@ void Parser::CONST() {
         st_lex.push(LEX_INT);
     } else if(curr_type == LEX_STRING_DATA) {
         st_lex.push(LEX_STRING);
-    } else if(curr_type == LEX_BOOL) {
+    } else if(curr_type == LEX_TRUE) {
+        st_lex.push(LEX_BOOL);
+    } else if(curr_type == LEX_FALSE) {
         st_lex.push(LEX_BOOL);
     } else if(curr_type == LEX_PLUS || curr_type == LEX_MINUS) {
         get_lex();
@@ -122,4 +131,51 @@ void Parser::VAR(TypeOfLex type) {
     } else {
         st_lex.pop();
     }
+}
+
+void Parser::OPERATORS() {
+    if(curr_type == LEX_IF) {
+        get_lex();
+        EXPRESSION();
+    }
+}
+
+void Parser::EXPRESSION() {
+    SUMMATION();
+    
+}
+
+void Parser::SUMMATION() {
+    MULTIPLICATION();
+    
+}
+
+void Parser::MULTIPLICATION() {
+    OPERANDS();
+    
+}
+
+void Parser::OPERANDS() {
+    if(curr_type == LEX_ID) {
+        check_id_declaration();
+    } else if(curr_type == LEX_NUM) {
+        st_lex.push(LEX_INT);
+    } else if(curr_type == LEX_TRUE) {
+        st_lex.push(LEX_BOOL);
+    } else if(curr_type == LEX_FALSE) {
+        st_lex.push(LEX_BOOL);
+    } else if(curr_type == LEX_NOT) {
+        get_lex();
+        OPERANDS();
+        check_operand_for_not();
+    } else if(curr_type == LEX_LPAREN) {
+        get_lex();
+        EXPRESSION();
+        if(curr_type != LEX_RPAREN) {
+            throw curr_lex;
+        }
+    } else {
+        throw curr_lex;
+    }
+    get_lex();
 }

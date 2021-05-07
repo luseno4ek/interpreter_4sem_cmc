@@ -19,14 +19,20 @@ private:
     void get_lex();
 //procedures for recursive descent:
     void PROG();
-    void DEFS();
+    void DEFINITIONS();
     void DEF(TypeOfLex type);
     void VAR(TypeOfLex type);
-    void OPER();
     void CONST();
+    void OPERATORS();
+    void EXPRESSION();
+    void SUMMATION();
+    void MULTIPLICATION();
+    void OPERANDS();
 //semantic analysis:
     void declareID(TypeOfLex type);
     void check_types_equality();
+    void check_id_declaration();
+    void check_operand_for_not();
 //helpful procedures:
     bool is_lex_type(TypeOfLex type);
 public:
