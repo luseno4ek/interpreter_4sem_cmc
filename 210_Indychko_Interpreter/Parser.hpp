@@ -21,9 +21,12 @@ private:
     void PROG();
     void DEFS();
     void DEF(TypeOfLex type);
+    void VAR(TypeOfLex type);
     void OPER();
+    void CONST();
 //semantic analysis:
     void declareID(TypeOfLex type);
+    void check_types_equality();
 //helpful procedures:
     bool is_lex_type(TypeOfLex type);
 public:
