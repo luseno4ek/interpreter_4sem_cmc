@@ -20,8 +20,12 @@ private:
 //procedures for recursive descent:
     void PROG();
     void DEFS();
+    void DEF(TypeOfLex type);
+    void OPER();
 //semantic analysis:
     void declareID(TypeOfLex type);
+//helpful procedures:
+    bool is_lex_type(TypeOfLex type);
 public:
     void analysis();
 };

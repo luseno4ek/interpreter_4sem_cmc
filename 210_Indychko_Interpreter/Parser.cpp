@@ -10,6 +10,13 @@ void Parser::get_lex() {
 void Parser::analysis() {
     get_lex();
     PROG();
+    
+}
+
+/*/////////////////////////////////////////*/
+
+bool Parser::is_lex_type(TypeOfLex type) {
+    return (type == LEX_STRING || type == LEX_INT || type == LEX_BOOL || type == LEX_STRUCT);
 }
 
 /*/////////////////////////////////////////*/
@@ -40,11 +47,46 @@ void Parser::PROG() {
     } else {
         throw curr_lex;
     }
+    DEFS();
     
 }
 
 void Parser::DEFS() {
-    if(curr_type == LEX_STRING || curr_type == LEX_INT || curr_type == LEX_BOOL || curr_type == LEX_STRUCT) {
-        
+    st_int.reset();
+    while(is_lex_type(curr_type)) {
+        if(curr_type == LEX_INT) {
+            DEF(LEX_INT);
+        } else if(curr_type == LEX_STRING) {
+            DEF(LEX_STRING);
+        } else if(curr_type == LEX_BOOL) {
+            DEF(LEX_BOOL);
+        } else {
+            DEF(LEX_STRUCT);
+        }
+//after returning from DEF(): curr_type == LEX_SEMICOLON => get new lexeme
+        get_lex();
+    }
+//if we are here, we got new lexeme, which is not type => operators' part has started
+}
+
+void Parser::DEF(TypeOfLex type) {
+    get_lex();
+    if(curr_type != LEX_ID) {
+        throw "Type without variable!";
+    }
+    st_int.push(curr_value);
+    declareID(type);
+    get_lex();
+    while(curr_type == LEX_COMMA) {
+        get_lex();
+        if(curr_type != LEX_ID) {
+            throw "Missing variable!";
+        }
+        st_int.push(curr_value);
+        declareID(type);
+        get_lex();
+    }
+    if(curr_type != LEX_SEMICOLON) {
+        throw curr_lex;
     }
 }
