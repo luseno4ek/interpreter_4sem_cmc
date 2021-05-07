@@ -15,8 +15,24 @@ void Parser::analysis() {
 
 /*/////////////////////////////////////////*/
 
-bool Parser::is_lex_type(TypeOfLex type) {
-    return (type == LEX_STRING || type == LEX_INT || type == LEX_BOOL || type == LEX_STRUCT);
+bool Parser::is_lex_type() {
+    TypeOfLex t = curr_type;
+    return (t == LEX_STRING || t == LEX_INT || t == LEX_BOOL || t == LEX_STRUCT);
+}
+
+bool Parser::is_lex_multiplication() {
+    TypeOfLex t = curr_type;
+    return (t == LEX_MULTIPLY || t == LEX_DIVISION || t == LEX_AND);
+}
+
+bool Parser::is_lex_summation() {
+    TypeOfLex t = curr_type;
+    return (t == LEX_OR || t == LEX_MINUS || t == LEX_PLUS);
+}
+
+bool Parser::is_lex_comparison() {
+    TypeOfLex t = curr_type;
+    return (t == LEX_EQ || t == LEX_NEQ || t == LEX_GEQ || t == LEX_LEQ || t == LEX_LESS || t == LEX_GR);
 }
 
 /*/////////////////////////////////////////*/
@@ -46,6 +62,77 @@ void Parser::check_operand_for_not() {
     st_lex.push(LEX_BOOL);
 }
 
+void Parser::check_operand_for_unminus() {
+    if(st_lex.pop() != LEX_INT) {
+        throw "Wrong operand for unary minus!";
+    }
+    st_lex.push(LEX_INT);
+}
+
+void Parser::check_operands_for_multiply() {
+    TypeOfLex operand1, operand2, op;
+    TypeOfLex check_type = LEX_INT, result_type = LEX_BOOL;
+    operand2 = st_lex.pop();
+    op = st_lex.pop();
+    operand1 = st_lex.pop();
+    if(op == LEX_DIVISION || op == LEX_MULTIPLY) {
+        result_type = LEX_INT;
+    }
+    if(op == LEX_AND) {
+        check_type = LEX_BOOL;
+    }
+    if(operand1 == operand2 && operand2 == check_type) {
+        st_lex.push(result_type);
+    } else {
+        throw "Wrong types in operation!";
+    }
+}
+
+void Parser::check_operands_for_summation() {
+    TypeOfLex operand1, operand2, op;
+    TypeOfLex check_type = LEX_INT, result_type = LEX_BOOL;
+    operand2 = st_lex.pop();
+    op = st_lex.pop();
+    operand1 = st_lex.pop();
+    if(op == LEX_PLUS || op == LEX_MINUS) {
+        if(operand1 == LEX_STRING) {
+            result_type = LEX_STRING;
+            check_type = LEX_STRING;
+        } else {
+            result_type = LEX_INT;
+        }
+    }
+    if(op == LEX_AND) {
+        check_type = LEX_BOOL;
+    }
+    if(operand1 == operand2 && operand2 == check_type) {
+        st_lex.push(result_type);
+    } else {
+        throw "Wrong types in operation!";
+    }
+}
+
+void Parser::check_operands_for_comparison() {
+    TypeOfLex operand1, operand2, op;
+    operand2 = st_lex.pop();
+    op = st_lex.pop();
+    operand1 = st_lex.pop();
+    if(operand1 != operand2) {
+        throw "Wrong types in operation!";
+    }
+    if(operand1 == LEX_STRING || operand1 == LEX_BOOL) {
+        if(op == LEX_LEQ || op == LEX_GEQ) {
+            throw "Wrong types in operation!";
+        }
+    }
+}
+
+void Parser::check_is_expression_bool() {
+    if(st_lex.pop() != LEX_BOOL) {
+        throw "Expression is not bool!";
+    }
+}
+
 /*/////////////////////////////////////////*/
 
 
@@ -66,7 +153,7 @@ void Parser::PROG() {
 
 void Parser::DEFINITIONS() {
     st_int.reset();
-    while(is_lex_type(curr_type)) {
+    while(is_lex_type()) {
         if(curr_type == LEX_INT) {
             DEF(LEX_INT);
         } else if(curr_type == LEX_STRING) {
@@ -136,23 +223,55 @@ void Parser::VAR(TypeOfLex type) {
 void Parser::OPERATORS() {
     if(curr_type == LEX_IF) {
         get_lex();
+        if(curr_type != LEX_LPAREN) {
+            throw curr_lex;
+        }
+        get_lex();
         EXPRESSION();
+        check_is_expression_bool();
+        if(curr_type != LEX_RPAREN) {
+            throw curr_lex;
+        }
+        get_lex();
+        OPERATORS();
+        if(curr_type != LEX_ELSE) {
+            throw curr_lex;
+        }
+        get_lex();
+        OPERATORS();
     }
 }
 
 void Parser::EXPRESSION() {
     SUMMATION();
+    if(is_lex_comparison()) {
+        st_lex.push(curr_type);
+        get_lex();
+        SUMMATION();
+        check_operands_for_comparison();
+    }
     
 }
 
 void Parser::SUMMATION() {
     MULTIPLICATION();
+    while(is_lex_summation()) {
+        st_lex.push(curr_type);
+        get_lex();
+        MULTIPLICATION();
+        check_operands_for_summation();
+    }
     
 }
 
 void Parser::MULTIPLICATION() {
     OPERANDS();
-    
+    while(is_lex_multiplication()) {
+        st_lex.push(curr_type);
+        get_lex();
+        OPERANDS();
+        check_operands_for_multiply();
+    }
 }
 
 void Parser::OPERANDS() {
@@ -168,6 +287,10 @@ void Parser::OPERANDS() {
         get_lex();
         OPERANDS();
         check_operand_for_not();
+    } else if(curr_type == LEX_MINUS) {
+        get_lex();
+        OPERANDS();
+        check_operand_for_unminus();
     } else if(curr_type == LEX_LPAREN) {
         get_lex();
         EXPRESSION();

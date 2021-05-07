@@ -33,8 +33,16 @@ private:
     void check_types_equality();
     void check_id_declaration();
     void check_operand_for_not();
+    void check_operand_for_unminus();
+    void check_operands_for_multiply();
+    void check_operands_for_summation();
+    void check_operands_for_comparison();
+    void check_is_expression_bool();
 //helpful procedures:
-    bool is_lex_type(TypeOfLex type);
+    bool is_lex_type();
+    bool is_lex_multiplication();
+    bool is_lex_summation();
+    bool is_lex_comparison();
 public:
     void analysis();
 };
