@@ -2,27 +2,28 @@
 #define Parser_hpp
 
 #include <stdio.h>
-#include <stack>
 #include "Lexeme.hpp"
 #include "Scanner.hpp"
+#include "MyStack.hpp"
 
 class Parser {
+private:
 //current lexeme:
     Lex curr_lex;
     TypeOfLex curr_type;
     int curr_value;
 //scanner for getting lexemes:
     Scanner scan;
-    std::stack<int> st_int;
-    std::stack<TypeOfLex> st_lex;
-    void GetLex();
+    MyStack<int, 100> st_int;
+    MyStack<TypeOfLex, 100> st_lex;
+    void get_lex();
 //procedures for recursive descent:
-    
-    
+    void PROG();
+    void DEFS();
 //semantic analysis:
-    
-    
-    
+    void declareID(TypeOfLex type);
+public:
+    void analysis();
 };
 
 #endif /* Parser_hpp */
