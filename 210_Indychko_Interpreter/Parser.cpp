@@ -230,7 +230,7 @@ void Parser::PROG() {
     }
     DEFINITIONS();
     STRUCT_DEF();
-    OPERATORS();
+    OPERATORS_BLOCK();
 }
 /*
 Parser::Struct::Struct(char* _name, StructFields* _fields)
@@ -336,55 +336,82 @@ void Parser::VAR(TypeOfLex type) {
     }
 }
 
+void Parser::OPERATORS_BLOCK() {
+    do {
+        OPERATORS();
+    } while (curr_type != LEX_END);
+}
+
 void Parser::OPERATORS() {
-    int poliz0, poliz1, poliz2, poliz3;
+    int point0, point1, point2, point3;
     if(curr_type == LEX_IF) {
         get_lex();
         check_lparen();
         EXPRESSION();
         check_is_expression_bool();
-        poliz2 = poliz.get_free();
+        point2 = poliz.get_free();
         poliz.blank();
         poliz.put_lex(Lex(POLIZ_FGO));
         check_rparen();
         OPERATORS();
-        poliz3 = poliz.get_free();
+        point3 = poliz.get_free();
         poliz.blank();
         poliz.put_lex(Lex(POLIZ_GO));
-        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), poliz2);
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), point2);
         if(curr_type != LEX_ELSE) {
             throw "'else' expected!";
         }
         get_lex();
         OPERATORS();
-        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), poliz3);
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), point3);
     } else if(curr_type == LEX_WHILE) {
         get_lex();
         check_lparen();
-        poliz0 = poliz.get_free();
+        point0 = poliz.get_free();
         EXPRESSION();
         check_is_expression_bool();
-        poliz1 = poliz.get_free();
+        point1 = poliz.get_free();
         poliz.blank();
         poliz.put_lex(Lex(POLIZ_FGO));
         check_rparen();
         OPERATORS();
-        poliz.put_lex(Lex(POLIZ_LABEL, poliz0));
+        poliz.put_lex(Lex(POLIZ_LABEL, point0));
         poliz.put_lex(Lex(POLIZ_GO));
-        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), poliz1);
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), point1);
         add_breakpoint(poliz.get_free());
     } else if(curr_type == LEX_FOR) {
-       /* get_lex(); !!!!!!!!!! COMPLETE !!!!!!!!!!!!!!!!
+        get_lex();
         check_lparen();
-        for(int i = 0; i < 3; i++) {
-            if(curr_type == LEX_SEMICOLON) {
-                get_lex();
-            } else {
-                EXPRESSION();
-                check_semicolon();
-            }
+        if(curr_type != LEX_SEMICOLON) {
+            EXPRESSION();
         }
-        OPERATORS(); */
+        check_semicolon();
+        point1 = poliz.get_free();
+        if(curr_type != LEX_SEMICOLON) {
+            EXPRESSION();
+            check_is_expression_bool();
+        } else {
+            poliz.put_lex(Lex(LEX_TRUE));
+        }
+        point0 = poliz.get_free();
+        poliz.blank();
+        poliz.put_lex(Lex(POLIZ_FGO));
+        check_semicolon();
+        point3 = poliz.get_free();
+        poliz.blank();
+        poliz.put_lex(Lex(POLIZ_GO));
+        if(curr_type != LEX_RPAREN) {
+            EXPRESSION();
+        }
+        poliz.put_lex(Lex(POLIZ_LABEL, point1));
+        poliz.put_lex(Lex(POLIZ_GO));
+        check_rparen();
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), point3);
+        OPERATORS();
+        poliz.put_lex(Lex(POLIZ_LABEL, point3 + 2));
+        poliz.put_lex(Lex(POLIZ_GO));
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), point0);
+        add_breakpoint(poliz.get_free());
     } else if(curr_type == LEX_BREAK) {
         curr_breakpoint = poliz.get_free();
         poliz.blank();
@@ -398,25 +425,31 @@ void Parser::OPERATORS() {
             throw curr_lex;
         }
         check_id_for_read();
+        poliz.put_lex(Lex(POLIZ_ADDRESS, curr_value));
         get_lex();
         check_rparen();
+        poliz.put_lex(Lex(LEX_READ));
         check_semicolon();
     } else if(curr_type == LEX_WRITE) {
         get_lex();
         check_lparen();
         EXPRESSION();
+        poliz.put_lex(Lex(LEX_WRITE));
         while(curr_type == LEX_COMMA) {
             get_lex();
             EXPRESSION();
+            poliz.put_lex(Lex(LEX_WRITE));
         }
         check_rparen();
         check_semicolon();
+        poliz.put_lex(Lex(LEX_SEMICOLON));
     } else if(curr_type == LEX_BEGIN) {
         get_lex();
-        OPERATORS();
+        OPERATORS_BLOCK();
         if(curr_type != LEX_END) {
             throw "'}' expected!";
         }
+        get_lex();
     } else if(curr_type == LEX_GOTO) {
         get_lex();
         if(curr_type != LEX_ID) {

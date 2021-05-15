@@ -39,6 +39,7 @@ private:
     void DEF(TypeOfLex type);
     void VAR(TypeOfLex type);
     void CONST();
+    void OPERATORS_BLOCK();
     void OPERATORS();
     void EXPRESSION();
     void SUMMATION();
