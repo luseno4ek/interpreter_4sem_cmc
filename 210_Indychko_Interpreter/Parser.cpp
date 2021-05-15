@@ -1,6 +1,44 @@
 #include "Parser.hpp"
 #include "Lexeme.hpp"
 
+template<class T, int max_size>
+MyStack<T, max_size>::MyStack()
+: top(0) {}
+
+template<class T, int max_size>
+void MyStack<T, max_size>::reset() { top = 0; }
+
+template<class T, int max_size>
+bool MyStack<T, max_size>::isempty() { return top == 0; }
+
+template<class T, int max_size>
+bool MyStack<T, max_size>::isfull() { return top == max_size; }
+
+template<class T, int max_size>
+void MyStack<T, max_size>::push(T item) {
+    if(isfull()) {
+        throw "Stack is full!";
+    }
+    stack[top] = item;
+    top++;
+}
+
+template<class T, int max_size>
+T MyStack<T, max_size>::pop() {
+    if(isempty()) {
+        throw "Stack is empty!";
+    }
+    top--;
+    return stack[top];
+}
+
+/*/////////////////////////////////////////*/
+
+Parser::Parser(const char* file_name)
+: scan(file_name), poliz(1000) {}
+
+/*/////////////////////////////////////////*/
+
 void Parser::get_lex() {
     curr_lex = scan.get_lex();
     curr_type = curr_lex.get_type();
@@ -56,19 +94,35 @@ void Parser::check_semicolon() {
     get_lex();
 }
 
+void Parser::add_breakpoint(int loop_end) {
+    if(curr_breakpoint != -1) {
+        poliz.update_lex(Lex(POLIZ_LABEL, loop_end), curr_breakpoint);
+        curr_breakpoint = -1;
+    }
+}
+
 /*/////////////////////////////////////////*/
 
 void Parser::declareID(TypeOfLex type) {
     int i;
     if(!st_int.isempty()) {
         i = st_int.pop();
-        if(Identifiers[i].get_declare()) {
+        if(Scanner::Identifiers[i].get_declare()) {
             throw "ID is declared twice!";
         }
-        Identifiers[i].set_declare();
-        Identifiers[i].set_type(type);
+        Scanner::Identifiers[i].set_declare();
+        Scanner::Identifiers[i].set_type(type);
     }
 }
+
+void Parser::check_id_declaration() {
+    if(Scanner::Identifiers[curr_value].get_declare()) {
+        st_lex.push(Scanner::Identifiers[curr_value].get_type());
+    } else {
+        throw "Identifier is not declared!";
+    }
+}
+
 
 void Parser::check_types_equality() {
     if(st_lex.pop() != st_lex.pop()) {
@@ -155,7 +209,7 @@ void Parser::check_is_expression_bool() {
 }
 
 void Parser::check_id_for_read() {
-    if(!Identifiers[curr_value].get_declare()) {
+    if(!Scanner::Identifiers[curr_value].get_declare()) {
         throw "Identifier is not declared!";
     }
 }
@@ -175,8 +229,43 @@ void Parser::PROG() {
         throw curr_lex;
     }
     DEFINITIONS();
+    STRUCT_DEF();
     OPERATORS();
 }
+/*
+Parser::Struct::Struct(char* _name, StructFields* _fields)
+: name(_name), fields(_fields) {}
+
+void Parser::STRUCT_DEF() {
+    while(curr_type == LEX_STRUCT) {
+        get_lex();
+        if(curr_type != LEX_ID) {
+            throw "Struct name was expected!";
+        }
+        // check if is declared
+        
+        Identifiers[curr_value].set_type(LEX_STRUCT_DEF);
+        // Identifiers[curr_value].set_value = position_in_array_of_structures
+        char* curr_name = Identifiers[curr_value].get_name();
+        Struct curr_struct(curr_name);
+        get_lex();
+        if(curr_type != LEX_BEGIN) {
+            throw "'{' was expected!";
+        }
+        get_lex();
+        curr_struct.fields = DEF_IN_STRUCT();
+        structures[curr_value] = curr_struct;
+        if(curr_type != LEX_END) {
+            throw "'}' was expected!";
+        }
+        check_semicolon();
+    }
+}
+
+Parser::StructFields* Parser::DEF_IN_STRUCT() {
+    
+}
+*/
 
 void Parser::DEFINITIONS() {
     st_int.reset();
@@ -248,31 +337,44 @@ void Parser::VAR(TypeOfLex type) {
 }
 
 void Parser::OPERATORS() {
+    int poliz0, poliz1, poliz2, poliz3;
     if(curr_type == LEX_IF) {
         get_lex();
         check_lparen();
         EXPRESSION();
         check_is_expression_bool();
+        poliz2 = poliz.get_free();
+        poliz.blank();
+        poliz.put_lex(Lex(POLIZ_FGO));
         check_rparen();
         OPERATORS();
+        poliz3 = poliz.get_free();
+        poliz.blank();
+        poliz.put_lex(Lex(POLIZ_GO));
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), poliz2);
         if(curr_type != LEX_ELSE) {
             throw "'else' expected!";
         }
         get_lex();
         OPERATORS();
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), poliz3);
     } else if(curr_type == LEX_WHILE) {
         get_lex();
         check_lparen();
+        poliz0 = poliz.get_free();
         EXPRESSION();
         check_is_expression_bool();
+        poliz1 = poliz.get_free();
+        poliz.blank();
+        poliz.put_lex(Lex(POLIZ_FGO));
         check_rparen();
         OPERATORS();
-        if(curr_type == LEX_BREAK) {
-            get_lex();
-            check_semicolon();
-        }
+        poliz.put_lex(Lex(POLIZ_LABEL, poliz0));
+        poliz.put_lex(Lex(POLIZ_GO));
+        poliz.update_lex(Lex(POLIZ_LABEL, poliz.get_free()), poliz1);
+        add_breakpoint(poliz.get_free());
     } else if(curr_type == LEX_FOR) {
-        get_lex();
+       /* get_lex(); !!!!!!!!!! COMPLETE !!!!!!!!!!!!!!!!
         check_lparen();
         for(int i = 0; i < 3; i++) {
             if(curr_type == LEX_SEMICOLON) {
@@ -282,7 +384,13 @@ void Parser::OPERATORS() {
                 check_semicolon();
             }
         }
-        OPERATORS();
+        OPERATORS(); */
+    } else if(curr_type == LEX_BREAK) {
+        curr_breakpoint = poliz.get_free();
+        poliz.blank();
+        poliz.put_lex(Lex(POLIZ_GO));
+        get_lex();
+        check_semicolon();
     } else if(curr_type == LEX_READ) {
         get_lex();
         check_lparen();
@@ -314,7 +422,7 @@ void Parser::OPERATORS() {
         if(curr_type != LEX_ID) {
             throw "Identificator expected!";
         }
-        if(Identifiers[curr_value].get_declare()) {
+        if(Scanner::Identifiers[curr_value].get_declare()) {
             throw "Label is declared as variable!";
         }
         get_lex();

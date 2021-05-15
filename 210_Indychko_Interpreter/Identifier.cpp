@@ -5,7 +5,7 @@
 Ident::Ident()
 : declare(false), assign(false) {}
 
-Ident::~Ident() { delete[] name; }
+Ident::~Ident() { }
 
 char* Ident::get_name() { return name; }
 
@@ -30,6 +30,14 @@ bool Ident::get_assign() { return assign; }
 
 void Ident::set_assign() { assign = true; }
 
+void Ident::set_goto_label(int _label) { goto_label = _label; }
+
+int Ident::get_goto_label() { return goto_label; }
+
+void Ident::set_is_goto_label() { is_goto_label = true; }
+
+bool Ident::get_is_goto_label() { return is_goto_label; }
+
 /*/////////////////////////////////////////*/
 
 TableIdent::TableIdent(int max_size)
@@ -53,22 +61,3 @@ int TableIdent::add(const char *buf) {
     return last_pos - 1;
 }
 
-/*/////////////////////////////////////////*/
-
-TableString::TableString()
-: table(nullptr), size(0) {}
-
-TableString::~TableString() {
-    if(table != nullptr) {
-        free(table);
-    }
-}
-
-int TableString::add(const char *buf) {
-    size++;
-    table = (char**)realloc(table, size);
-    table[size - 1] = new char[strlen(buf) + 1];
-    strcpy(table[size - 1], buf);
-    table[size] = nullptr;
-    return size - 1;
-}

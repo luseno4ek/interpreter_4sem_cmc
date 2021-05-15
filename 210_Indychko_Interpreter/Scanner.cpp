@@ -1,6 +1,91 @@
 #include "Scanner.hpp"
 #include <cstring>
 
+const char* Scanner::ServiceWords[] = {
+    ""
+    "program",
+    "string",
+    "int",
+    "boolean",
+    "struct",
+    "if",
+    "then",
+    "else",
+    "for",
+    "while",
+    "break",
+    "goto",
+    "false",
+    "true",
+    "not",
+    "or",
+    "and",
+    "read",
+    "write",
+    NULL
+};
+
+/*/////////////////////////////////////////*/
+
+const char* Scanner::LimSymbols[] = {
+    ""
+    "@",
+    "{",
+    "}",
+    "*",
+    "/",
+    "+",
+    "-",
+    "<",
+    ">",
+    "<=",
+    ">=",
+    "==",
+    "!=",
+    "=",
+    ";",
+    ",",
+    ":",
+    "(",
+    ")",
+    NULL
+};
+
+/*/////////////////////////////////////////*/
+
+TableIdent Scanner::Identifiers(100);
+TableIdent Scanner::StringData(100);
+
+/*/////////////////////////////////////////*/
+
+TypeOfLex Scanner::words[] = {
+    LEX_NULL,
+    LEX_PROGRAM,
+    LEX_STRING, LEX_INT, LEX_BOOL, LEX_STRUCT,
+    LEX_IF, LEX_THEN, LEX_ELSE,
+    LEX_FOR, LEX_WHILE,
+    LEX_BREAK, LEX_GOTO,
+    LEX_FALSE, LEX_TRUE,
+    LEX_NOT, LEX_OR, LEX_AND,
+    LEX_READ, LEX_WRITE,
+    LEX_NULL
+};
+
+/*/////////////////////////////////////////*/
+
+TypeOfLex Scanner::symbols[] = {
+    LEX_NULL,
+    LEX_FIN, LEX_BEGIN, LEX_END,
+    LEX_MULTIPLY, LEX_DIVISION, LEX_PLUS,
+    LEX_MINUS, LEX_LESS, LEX_GR, LEX_LEQ,
+    LEX_GEQ, LEX_EQ, LEX_NEQ, LEX_ASSIGN,
+    LEX_SEMICOLON, LEX_COMMA, LEX_COLON,
+    LEX_LPAREN, LEX_RPAREN,
+    LEX_NULL
+};
+
+/*/////////////////////////////////////////*/
+
 Scanner::Scanner(const char* program) {
     fp = fopen(program, "r"); // file "program" is opened for reading
     curr_state = INIT;
@@ -55,6 +140,13 @@ Lex Scanner::get_lex() {
                     return Lex(LEX_FIN);
                 } else if(c == '"') {
                     curr_state = STRING;
+                } else if(c == '/') {
+                    gc();
+                    if(c == '*') {
+                        curr_state = COMMENTARY;
+                    } else {
+                        throw "Incorrect commentary use!";
+                    }
                 } else {
                     curr_state = SYMBOL;
                     break;
@@ -67,7 +159,7 @@ Lex Scanner::get_lex() {
                     gc();
                 } else {
                     if((j = look(buf, ServiceWords)) != 0) {
-                        return Lex(words[j], j);
+                        return Lex(words[j+1], j);
                     } else {
                         j = Identifiers.add(buf);
                         return Lex(LEX_ID, j);
@@ -87,18 +179,20 @@ Lex Scanner::get_lex() {
                     add();
                     gc();
                 } else if(buf[buf_top - 2] == '!') {
-                        throw '!';
+                     throw '!';
                 }
                 j = look(buf, LimSymbols);
-                return Lex(symbols[j], j);
+                return Lex(symbols[j+1], j);
                 break;
             case SYMBOL:
                 add();
                 if((j = look(buf, LimSymbols)) != 0) {
                     gc();
-                    return Lex(symbols[j], j);
-                } else {
-                    throw c;
+                    return Lex(symbols[j+1], j);
+                } else if(c == '\n' || c == ' ') {
+                    gc();
+                    clear();
+                    curr_state = INIT;
                 }
                 break;
             case STRING:
@@ -106,9 +200,35 @@ Lex Scanner::get_lex() {
                     add();
                     gc();
                 }
-                j = StringsData.add(buf);
+                j = StringData.add(buf);
+                gc();
                 return Lex(LEX_STRING_DATA, j);
+                break;
+            case COMMENTARY:
+                while(c != '*') {
+                    gc();
+                }
+                gc();
+                if(c != '/') {
+                    curr_state = COMMENTARY;
+                    break;
+                }
+                curr_state = INIT;
                 break;
         }
     } while(true);
 }
+
+
+
+
+void Scanner::Print_Result() {
+    Lex curr_lex;
+    curr_lex = get_lex();
+    while(curr_lex.get_type() != LEX_FIN) {
+        std::cout << curr_lex;
+        curr_lex = get_lex();
+    }
+}
+
+

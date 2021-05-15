@@ -1,10 +1,12 @@
 #ifndef Lexeme_hpp
 #define Lexeme_hpp
 
+#include <iostream>
+
 enum TypeOfLex {
     LEX_NULL,
     LEX_PROGRAM,
-    LEX_STRING, LEX_INT, LEX_BOOL, LEX_STRUCT,
+    LEX_STRING, LEX_INT, LEX_BOOL, LEX_STRUCT, LEX_STRUCT_DEF,
     LEX_IF, LEX_THEN, LEX_ELSE,
     LEX_FOR, LEX_WHILE,
     LEX_BREAK, LEX_GOTO,
@@ -18,7 +20,12 @@ enum TypeOfLex {
     LEX_COMMA, LEX_COLON, LEX_LPAREN, LEX_RPAREN,
     LEX_NUM,        // number
     LEX_ID,         // identificator
-    LEX_STRING_DATA // string
+    LEX_STRING_DATA,// string
+    LEX_UNARY_MINUS,
+    POLIZ_LABEL,
+    POLIZ_ADDRESS,
+    POLIZ_GO,
+    POLIZ_FGO
 };
 
 class Lex {
@@ -29,6 +36,7 @@ public:
     Lex(TypeOfLex _type = LEX_NULL, int _value = 0);
     TypeOfLex get_type();
     int get_value();
+    friend std::ostream& operator<<(std::ostream& s, Lex lexeme);
 };
 
 #endif /* Lexeme_hpp */

@@ -10,6 +10,8 @@ private:
     bool assign;
     TypeOfLex type;
     int value;
+    int goto_label;
+    bool is_goto_label;
 public:
     Ident();
     ~Ident();
@@ -23,6 +25,10 @@ public:
     void set_declare();
     bool get_assign();
     void set_assign();
+    void set_goto_label(int _label);
+    int get_goto_label();
+    void set_is_goto_label();
+    bool get_is_goto_label();
 };
 
 /*/////////////////////////////////////////*/

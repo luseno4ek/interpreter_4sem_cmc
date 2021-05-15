@@ -12,12 +12,9 @@ private:
         NUMBER,
         STRING, 
         DOUBLESYMBOL, // !=, <=, >=, ==
-        SYMBOL
+        SYMBOL,
+        COMMENTARY
     };
-    static const char* ServiceWords[];
-    static const char* LimSymbols[];
-    static TypeOfLex words[];
-    static TypeOfLex symbols[];
     State curr_state;
     FILE* fp;
     char c;
@@ -38,92 +35,13 @@ private:
 public:
     Scanner(const char* program);
     Lex get_lex();
-};
-
-/*/////////////////////////////////////////*/
-
-const char* Scanner::ServiceWords[] = {
-    ""
-    "program",
-    "string",
-    "int",
-    "boolean",
-    "struct",
-    "if",
-    "then",
-    "else",
-    "for",
-    "while",
-    "break",
-    "goto",
-    "false",
-    "true",
-    "not",
-    "or",
-    "and",
-    "read",
-    "write",
-    NULL
-};
-
-/*/////////////////////////////////////////*/
-
-const char* Scanner::LimSymbols[] = {
-    ""
-    "@",
-    "{",
-    "}",
-    "*",  
-    "/",
-    "+",
-    "-",
-    "<",
-    ">",
-    "<=",
-    ">=",
-    "==",
-    "!=",
-    "=",
-    ";",
-    ",",
-    ":",
-    "(",
-    ")",
-    NULL
-};
-
-/*/////////////////////////////////////////*/
-
-TableIdent Identifiers(100);
-TableIdent Labels(100);
-TableString StringsData;
-
-/*/////////////////////////////////////////*/
-
-TypeOfLex Scanner::words[] = {
-    LEX_NULL,
-    LEX_PROGRAM,
-    LEX_STRING, LEX_INT, LEX_BOOL, LEX_STRUCT,
-    LEX_IF, LEX_THEN, LEX_ELSE,
-    LEX_FOR, LEX_WHILE,
-    LEX_BREAK, LEX_GOTO,
-    LEX_FALSE, LEX_TRUE,
-    LEX_NOT, LEX_OR, LEX_AND,
-    LEX_READ, LEX_WRITE,
-    LEX_NULL
-};
-
-/*/////////////////////////////////////////*/
-
-TypeOfLex Scanner::symbols[] = {
-    LEX_NULL,
-    LEX_FIN, LEX_BEGIN, LEX_END,
-    LEX_MULTIPLY, LEX_DIVISION, LEX_PLUS,
-    LEX_MINUS, LEX_LESS, LEX_GR, LEX_LEQ,
-    LEX_GEQ, LEX_EQ, LEX_NEQ, LEX_ASSIGN,
-    LEX_SEMICOLON, LEX_COMMA, LEX_COLON,
-    LEX_LPAREN, LEX_RPAREN,
-    LEX_NULL
+    void Print_Result();
+    static const char* ServiceWords[];
+    static const char* LimSymbols[];
+    static TypeOfLex words[];
+    static TypeOfLex symbols[];
+    static TableIdent Identifiers;
+    static TableIdent StringData;
 };
 
 #endif /* Scanner_hpp */

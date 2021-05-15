@@ -5,13 +5,27 @@
 #include "Lexeme.hpp"
 #include "Scanner.hpp"
 #include "MyStack.hpp"
+#include "Polizzz.hpp"
 
 class Parser {
 private:
+/*/structures:
+    struct StructFields {
+        char* name;
+        TypeOfLex type;
+        StructFields(char* _name, TypeOfLex _type);
+    };
+    struct Struct {
+        char* name;
+        StructFields* fields;
+        Struct(char* _name, StructFields* _fields = nullptr);
+    }; */
 //current lexeme:
     Lex curr_lex;
     TypeOfLex curr_type;
     int curr_value;
+//check break in loops
+    int curr_breakpoint = -1;
 //scanner for getting lexemes:
     Scanner scan;
     MyStack<int, 100> st_int;
@@ -19,6 +33,8 @@ private:
     void get_lex();
 //procedures for recursive descent:
     void PROG();
+    void STRUCT_DEF();
+   // StructFields* DEF_IN_STRUCT();
     void DEFINITIONS();
     void DEF(TypeOfLex type);
     void VAR(TypeOfLex type);
@@ -47,8 +63,12 @@ private:
     void check_rparen();
     void check_lparen();
     void check_semicolon();
+    void add_breakpoint(int loop_end);
 public:
+    Poliz poliz;
     void analysis();
+ //   TableIdent structures[100];
+    Parser(const char* file_name);
 };
 
 #endif /* Parser_hpp */
