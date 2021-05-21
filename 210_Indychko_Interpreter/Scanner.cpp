@@ -45,6 +45,7 @@ const char* Scanner::LimSymbols[] = {
     "=",
     ";",
     ",",
+    ".",
     ":",
     "(",
     ")",
@@ -79,7 +80,7 @@ TypeOfLex Scanner::symbols[] = {
     LEX_MULTIPLY, LEX_DIVISION, LEX_PLUS,
     LEX_MINUS, LEX_LESS, LEX_GR, LEX_LEQ,
     LEX_GEQ, LEX_EQ, LEX_NEQ, LEX_ASSIGN,
-    LEX_SEMICOLON, LEX_COMMA, LEX_COLON,
+    LEX_SEMICOLON, LEX_COMMA, LEX_DOT, LEX_COLON,
     LEX_LPAREN, LEX_RPAREN,
     LEX_NULL
 };
@@ -147,6 +148,9 @@ Lex Scanner::get_lex() {
                     } else {
                         throw "Incorrect commentary use!";
                     }
+                } else if(c == ' ' || c == '\n') {
+                    gc();
+                    break;
                 } else {
                     curr_state = SYMBOL;
                     break;
@@ -154,7 +158,7 @@ Lex Scanner::get_lex() {
                 gc();
                 break;
             case ID:
-                if(isalpha(c) || isdigit(c)) {
+                if(isalpha(c) || isdigit(c) || c == '.') {
                     add();
                     gc();
                 } else {
@@ -200,9 +204,8 @@ Lex Scanner::get_lex() {
                     add();
                     gc();
                 }
-                j = StringData.add(buf);
                 gc();
-                return Lex(LEX_STRING_DATA, j);
+                return Lex(LEX_STRING_DATA, (long long)strdup(buf));
                 break;
             case COMMENTARY:
                 while(c != '*') {

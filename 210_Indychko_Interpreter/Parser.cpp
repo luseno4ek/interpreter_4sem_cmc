@@ -158,6 +158,12 @@ void Parser::add_goto_labels() {
     }
 }
 
+int Parser::length_of_struct(long long struct_type) const {
+    long long num_in_list = Scanner::Identifiers[struct_type].get_value();
+    auto strc = structs_definitions[num_in_list];
+    return (int)strc.fields.size();
+}
+
 /*/////////////////////////////////////////*/
 
 void Parser::declareID(TypeOfLex type) {
@@ -217,6 +223,7 @@ void Parser::check_operands_for_multiply() {
     }
     if(operand1 == operand2 && operand2 == check_type) {
         st_lex.push(result_type);
+        poliz.put_lex(Lex(op));
     } else {
         throw "Wrong types in operation!";
     }
@@ -241,6 +248,7 @@ void Parser::check_operands_for_summation() {
     }
     if(operand1 == operand2 && operand2 == check_type) {
         st_lex.push(result_type);
+        poliz.put_lex(Lex(op));
     } else {
         throw "Wrong types in operation!";
     }
@@ -259,6 +267,8 @@ void Parser::check_operands_for_comparison() {
             throw "Wrong types in operation!";
         }
     }
+    st_lex.push(LEX_BOOL);
+    poliz.put_lex(Lex(op));
 }
 
 void Parser::check_is_expression_bool() {
@@ -348,7 +358,11 @@ std::vector<Parser::StructFields> Parser::STRUCT_FIELD_DEF() {
 void Parser::DEFINITIONS() {
     st_int.reset();
     while(is_lex_type() || is_struct_name()) {
-        DEF(curr_lex);
+        if(is_struct_name()) {
+            DEF(Lex(LEX_STRUCT, curr_value));
+        } else {
+            DEF(curr_lex);
+        }
                                     //after returning from DEF(): curr_type == LEX_SEMICOLON =>
         get_lex();                  //get new lexeme
     }                               //if we are here, we got new lexeme, which is not type =>
@@ -375,17 +389,20 @@ void Parser::DEF(Lex saved_lex) {
 
 void Parser::VAR(Lex saved_lex) {
     if(saved_lex.get_type() == LEX_STRUCT) {
+        Scanner::Identifiers[curr_value].set_type(LEX_STRUCT);
+        Scanner::Identifiers[curr_value].set_value(saved_lex.get_value());
+        Scanner::Identifiers[curr_value].set_declare();
         const char* struct_name = Scanner::Identifiers[curr_value].get_name();
-            long long num_struct = Scanner::Identifiers[saved_lex.get_value()].get_value();
-            for (auto fld : structs_definitions[num_struct].fields){
-            const char* name = strcat(strcat(strdup(struct_name), "."), fld.name);
-
-            int i = Scanner::Identifiers.add(name);
-            Ident& new_id = Scanner::Identifiers[i];
-            new_id.set_declare();
-            new_id.set_type(fld.type);
-            new_id.set_value(0);
-        }
+        long long num_struct = Scanner::Identifiers[saved_lex.get_value()].get_value();
+            for(auto fld : structs_definitions[num_struct].fields) {
+                const char* name = strcat(strcat(strdup(struct_name), "."), fld.name);
+                int i = Scanner::Identifiers.add(name);
+                Ident& new_id = Scanner::Identifiers[i];
+                new_id.set_declare();
+                new_id.set_type(fld.type);
+                new_id.set_value(0);
+            }
+        get_lex();
     } else {
         st_int.push(curr_value);
         declareID(saved_lex.get_type());

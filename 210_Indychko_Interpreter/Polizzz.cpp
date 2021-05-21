@@ -18,7 +18,7 @@ void Poliz::blank() { free++; }
 
 int Poliz::get_free() { return free; }
 
-Lex& Poliz::operator[](int index) {
+Lex& Poliz::operator[](long long index) {
     if(index > size) {
         throw "POLIZ:out of array";
     }

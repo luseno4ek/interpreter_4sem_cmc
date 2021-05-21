@@ -1,5 +1,38 @@
 #include "Executor.hpp"
 
+template<class T, int max_size>
+MyStack<T, max_size>::MyStack()
+: top(0) {}
+
+template<class T, int max_size>
+void MyStack<T, max_size>::reset() { top = 0; }
+
+template<class T, int max_size>
+bool MyStack<T, max_size>::isempty() { return top == 0; }
+
+template<class T, int max_size>
+bool MyStack<T, max_size>::isfull() { return top == max_size; }
+
+template<class T, int max_size>
+void MyStack<T, max_size>::push(T item) {
+    if(isfull()) {
+        throw "Stack is full!";
+    }
+    stack[top] = item;
+    top++;
+}
+
+template<class T, int max_size>
+T MyStack<T, max_size>::pop() {
+    if(isempty()) {
+        throw "Stack is empty!";
+    }
+    top--;
+    return stack[top];
+}
+
+/*/////////////////////////////////////////*/
+
 void Executor::execute(Poliz& prog, const Parser& parser) {
     MyStack<Lex, 100> args;
     long long i, j, index = 0, size = prog.get_free();
@@ -178,7 +211,7 @@ void Executor::execute(Poliz& prog, const Parser& parser) {
             stack_lex_2 = args.pop();
             j = args.pop().get_value();
             if(stack_lex_2.get_type() == LEX_STRUCT) {
-                int len = parser.lengh_of_struct(Scanner::Identifiers[j].get_value());
+                int len = parser.length_of_struct(Scanner::Identifiers[j].get_value());
                 for(int y = 0; y < len; y++) {
                     Ident& r_val = Scanner::Identifiers[stack_lex_2.get_value() + 1 + y];
                     Ident& l_val = Scanner::Identifiers[j + 1 + y];
@@ -190,7 +223,7 @@ void Executor::execute(Poliz& prog, const Parser& parser) {
                     if (r_val.get_assign()) {l_val.set_assign();}
                 }
             } else if (stack_lex_2.get_type() == LEX_STRING_DATA) {
-                long long str_curr = (long long)strdup((char*)stack_lex_2.get_type());
+                long long str_curr = (long long)strdup((char*)stack_lex_2.get_value());
                 Scanner::Identifiers[j].set_value(str_curr);
             } else {
                 Scanner::Identifiers[j].set_value(stack_lex_2.get_value());
@@ -203,5 +236,5 @@ void Executor::execute(Poliz& prog, const Parser& parser) {
         }
         index++;
     };
-    std::cout << "Finish of executing!!!" << std::endl;
+    std::cout << ">>>PROGRAM WAS FINISHED CORRECTLY!<<<" << std::endl;
 }

@@ -81,6 +81,7 @@ public:
     Poliz poliz;
     void analysis();
     Parser(const char* file_name);
+    int length_of_struct(long long struct_type) const;
 };
 
 #endif /* Parser_hpp */
