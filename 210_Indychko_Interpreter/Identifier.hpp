@@ -9,7 +9,7 @@ private:
     bool declare;
     bool assign;
     TypeOfLex type;
-    int value;
+    long long value;
     int goto_label;
     bool is_goto_label;
 public:
@@ -19,8 +19,8 @@ public:
     void set_name(const char* buf);
     TypeOfLex get_type();
     void set_type(TypeOfLex _type);
-    int get_value();
-    void set_value(int _value);
+    long long get_value();
+    void set_value(long long _value);
     bool get_declare();
     void set_declare();
     bool get_assign();
@@ -41,20 +41,10 @@ private:
 public:
     TableIdent(int max_size);
     ~TableIdent();
-    Ident& operator[] (int k);
+    Ident& operator[] (long long k);
     int add(const char* buf);
-};
-
-/*/////////////////////////////////////////*/
-
-class TableString {
-private:
-    char** table;
-    int size;
-public:
-    TableString();
-    ~TableString();
-    int add(const char* buf);
+    void pop();
+    int get_size();
 };
 
 #endif /* Identificator_hpp */

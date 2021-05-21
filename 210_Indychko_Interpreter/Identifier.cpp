@@ -18,9 +18,9 @@ TypeOfLex Ident::get_type() { return type; }
 
 void Ident::set_type(TypeOfLex _type) { type = _type; }
 
-int Ident::get_value() { return value; }
+long long Ident::get_value() { return value; }
 
-void Ident::set_value(int _value) { value = _value; }
+void Ident::set_value(long long _value) { value = _value; }
 
 bool Ident::get_declare() { return declare; }
 
@@ -48,7 +48,7 @@ TableIdent::TableIdent(int max_size)
 
 TableIdent::~TableIdent() { delete[] table; }
 
-Ident& TableIdent::operator[](int k) { return table[k]; }
+Ident& TableIdent::operator[](long long k) { return table[k]; }
 
 int TableIdent::add(const char *buf) {
     for(int j = 1; j < last_pos; j++) {
@@ -61,3 +61,6 @@ int TableIdent::add(const char *buf) {
     return last_pos - 1;
 }
 
+void TableIdent::pop() { size--; }
+
+int TableIdent::get_size() { return size; }

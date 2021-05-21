@@ -103,7 +103,7 @@ void Scanner::add() { buf[buf_top++] = c; }
 int Scanner::look(const char *_buf, const char **list) {
     int i = 0;
     while(list[i] != NULL) {
-        if(strcmp(buf, list[i]) == 0) { return i; }
+        if(strcmp(buf, list[i]) == 0) { return ++i; }
         i++;
     }
     return 0;
@@ -159,7 +159,7 @@ Lex Scanner::get_lex() {
                     gc();
                 } else {
                     if((j = look(buf, ServiceWords)) != 0) {
-                        return Lex(words[j+1], j);
+                        return Lex(words[j], j);
                     } else {
                         j = Identifiers.add(buf);
                         return Lex(LEX_ID, j);
@@ -182,13 +182,13 @@ Lex Scanner::get_lex() {
                      throw '!';
                 }
                 j = look(buf, LimSymbols);
-                return Lex(symbols[j+1], j);
+                return Lex(symbols[j], j);
                 break;
             case SYMBOL:
                 add();
                 if((j = look(buf, LimSymbols)) != 0) {
                     gc();
-                    return Lex(symbols[j+1], j);
+                    return Lex(symbols[j], j);
                 } else if(c == '\n' || c == ' ') {
                     gc();
                     clear();
@@ -227,6 +227,9 @@ void Scanner::Print_Result() {
     curr_lex = get_lex();
     while(curr_lex.get_type() != LEX_FIN) {
         std::cout << curr_lex;
+        if(curr_lex.get_type() == LEX_SEMICOLON || curr_lex.get_type() == LEX_BEGIN) {
+            std::cout << std::endl;
+        }
         curr_lex = get_lex();
     }
 }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0533960A265846630038204F /* Interpreter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05339608265846620038204F /* Interpreter.cpp */; };
+		0533960E265847000038204F /* Executor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0533960C265847000038204F /* Executor.cpp */; };
 		0542BEFD264FD00B003255D8 /* Polizzz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0542BEFB264FD00B003255D8 /* Polizzz.cpp */; };
 		056B0BFC26223C3300B03119 /* Scanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 056B0BFA26223C3300B03119 /* Scanner.cpp */; };
 		05A90F35264550740041CBFB /* Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 05A90F33264550740041CBFB /* Parser.cpp */; };
@@ -28,6 +30,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		05339608265846620038204F /* Interpreter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Interpreter.cpp; sourceTree = "<group>"; };
+		05339609265846620038204F /* Interpreter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Interpreter.hpp; sourceTree = "<group>"; };
+		0533960C265847000038204F /* Executor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Executor.cpp; sourceTree = "<group>"; };
+		0533960D265847000038204F /* Executor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Executor.hpp; sourceTree = "<group>"; };
 		0542BEFB264FD00B003255D8 /* Polizzz.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Polizzz.cpp; sourceTree = "<group>"; };
 		0542BEFC264FD00B003255D8 /* Polizzz.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Polizzz.hpp; sourceTree = "<group>"; };
 		056B0BFA26223C3300B03119 /* Scanner.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scanner.cpp; sourceTree = "<group>"; };
@@ -85,6 +91,10 @@
 				05A90F3826455D240041CBFB /* MyStack.hpp */,
 				0542BEFB264FD00B003255D8 /* Polizzz.cpp */,
 				0542BEFC264FD00B003255D8 /* Polizzz.hpp */,
+				05339608265846620038204F /* Interpreter.cpp */,
+				05339609265846620038204F /* Interpreter.hpp */,
+				0533960C265847000038204F /* Executor.cpp */,
+				0533960D265847000038204F /* Executor.hpp */,
 			);
 			path = 210_Indychko_Interpreter;
 			sourceTree = "<group>";
@@ -149,7 +159,9 @@
 				05EBAA41261F948200A8A4A6 /* Identifier.cpp in Sources */,
 				056B0BFC26223C3300B03119 /* Scanner.cpp in Sources */,
 				05A90F35264550740041CBFB /* Parser.cpp in Sources */,
+				0533960E265847000038204F /* Executor.cpp in Sources */,
 				05EBAA3D261F8EDC00A8A4A6 /* Lexeme.cpp in Sources */,
+				0533960A265846630038204F /* Interpreter.cpp in Sources */,
 				0542BEFD264FD00B003255D8 /* Polizzz.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

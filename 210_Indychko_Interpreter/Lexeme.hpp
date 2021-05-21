@@ -31,12 +31,13 @@ enum TypeOfLex {
 class Lex {
 private:
     TypeOfLex type_lex;
-    int value_lex;
+    long long value_lex;
 public:
-    Lex(TypeOfLex _type = LEX_NULL, int _value = 0);
+    Lex(TypeOfLex _type = LEX_NULL, long long _value = 0);
     TypeOfLex get_type();
-    int get_value();
+    long long get_value();
     friend std::ostream& operator<<(std::ostream& s, Lex lexeme);
+    int IndexOf(const TypeOfLex* arr, TypeOfLex x);
 };
 
 #endif /* Lexeme_hpp */
