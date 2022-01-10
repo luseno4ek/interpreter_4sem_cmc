@@ -5,6 +5,6 @@ Interpreter::Interpreter(const char* program)
 
 void Interpreter::interpretation() {
     parser.analysis();
-    std::cout << ">>>PROGRAM IS STARTED<<<" << std::endl;
+    std::cout << ">>> PROGRAM IS STARTED <<<" << std::endl;
     executor.execute(parser.poliz, parser);
 }

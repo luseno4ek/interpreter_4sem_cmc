@@ -20,10 +20,10 @@ int Poliz::get_free() { return free; }
 
 Lex& Poliz::operator[](long long index) {
     if(index > size) {
-        throw "POLIZ:out of array";
+        throw "POLIZ: out of array";
     }
     if(index > free) {
-        throw "POLIZ:indefinite element of array";
+        throw "POLIZ: indefinite element of array";
     }
     return p[index];
 }

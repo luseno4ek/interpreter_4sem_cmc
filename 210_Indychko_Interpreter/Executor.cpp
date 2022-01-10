@@ -118,7 +118,7 @@ void Executor::execute(Poliz& prog, const Parser& parser) {
                 } else if(!strcmp(buff, "false")) {
                     k = 0;
                 } else {
-                    std::cout << "Error in input:true/false!" << std::endl;
+                    std::cout << "Error in input: true/false!" << std::endl;
                     std::cout << std::endl;
                     goto L;
                 }

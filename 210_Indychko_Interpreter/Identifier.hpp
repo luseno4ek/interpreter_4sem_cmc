@@ -11,7 +11,7 @@ private:
     TypeOfLex type;
     long long value;
     int goto_label;
-    bool is_goto_label;
+    bool is_goto_label = false;
 public:
     Ident();
     ~Ident();

@@ -11,7 +11,7 @@ long long Lex::get_value() { return value_lex; }
 
 int IndexOf(const TypeOfLex* arr, TypeOfLex x) {
     int i = 0;
-    while (arr[i] != x){
+    while (arr[i] != x) {
         i++;
     }
     return i;

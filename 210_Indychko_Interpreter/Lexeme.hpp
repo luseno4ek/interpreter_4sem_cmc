@@ -18,14 +18,15 @@ enum TypeOfLex {
     LEX_MINUS, LEX_LESS, LEX_GR, LEX_LEQ,
     LEX_GEQ, LEX_EQ, LEX_NEQ, LEX_ASSIGN, LEX_SEMICOLON,
     LEX_COMMA, LEX_DOT, LEX_COLON, LEX_LPAREN, LEX_RPAREN,
-    LEX_NUM,        // number
-    LEX_ID,         // identificator
-    LEX_STRING_DATA,// string
+    LEX_NUM,         // number
+    LEX_ID,          // identificator
+    LEX_STRING_DATA, // string
     LEX_UNARY_MINUS,
     POLIZ_LABEL,
     POLIZ_ADDRESS,
     POLIZ_GO,
-    POLIZ_FGO
+    POLIZ_FGO,
+    LEX_STRUCT_BASE = 100
 };
 
 class Lex {

@@ -15,9 +15,9 @@ private:
     ~Poliz();
     void put_lex(Lex l);
     void update_lex(Lex l, int place);
+    Lex& operator[](long long index);
     void blank();
     int get_free();
-    Lex& operator[](long long index);
     void print();
 };
 #endif /* Polizzz_hpp */

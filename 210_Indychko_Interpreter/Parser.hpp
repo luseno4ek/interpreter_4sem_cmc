@@ -33,7 +33,7 @@ private:
     MyStack<TypeOfLex, 100> st_lex;
     MyStack<Lex, 3> st_fail;
     void get_lex();
-// structures holding:
+//structures holding:
     std::vector<Struct> structs_definitions;
 //procedures for recursive descent:
     void PROG();

@@ -62,8 +62,8 @@ void Parser::get_lex() {
 void Parser::analysis() {
     get_lex();
     PROG();
- //   add_goto_labels();
-    poliz.print();
+    add_goto_labels();
+//    poliz.print();
 }
 
 /*/////////////////////////////////////////*/
@@ -179,8 +179,14 @@ void Parser::declareID(TypeOfLex type) {
 }
 
 void Parser::check_id_declaration(Lex curr_lex) {
-    if(Scanner::Identifiers[curr_lex.get_value()].get_declare()) {
-        st_lex.push(Scanner::Identifiers[curr_lex.get_value()].get_type());
+    if (Scanner::Identifiers[curr_lex.get_value()].get_declare()) {
+        if (Scanner::Identifiers[curr_lex.get_value()].get_type() == LEX_STRUCT) {
+            TypeOfLex curr = static_cast<TypeOfLex>(Scanner::Identifiers[curr_lex.get_value()].get_value()
+                + LEX_STRUCT_BASE);
+            st_lex.push(curr);
+        } else {
+            st_lex.push(Scanner::Identifiers[curr_lex.get_value()].get_type());
+        }
     } else {
         throw "Identifier is not declared!";
     }
@@ -188,9 +194,11 @@ void Parser::check_id_declaration(Lex curr_lex) {
 
 
 void Parser::check_types_equality() {
-    if(st_lex.pop() != st_lex.pop()) {
+    TypeOfLex curr_lex_type = st_lex.pop();
+    if(curr_lex_type != st_lex.pop()) {
         throw "Incompatible types!";
     }
+    st_lex.push(curr_lex_type);
 }
 
 void Parser::check_operand_for_not() {

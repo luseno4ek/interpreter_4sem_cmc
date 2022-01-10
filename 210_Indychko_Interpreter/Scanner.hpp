@@ -28,9 +28,9 @@ private:
     int look(const char* _buf, const char** list);
     ///gets char c from FILE* fp
     void gc();
-    ///returns 1 if c from [a,z]
+    ///returns 1 if c from [a, z]
     bool isalpha(char c);
-    ///returns 1 if c from [0,9]
+    ///returns 1 if c from [0, 9]
     bool isdigit(char c);
 public:
     Scanner(const char* program);

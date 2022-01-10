@@ -56,7 +56,7 @@ int TableIdent::add(const char *buf) {
             return j;               // we have found an identificator with the same name
         }                           // => return it's position
     }
-    table[last_pos].set_name(buf);  // we haven't found matching identificator
+    table[last_pos].set_name(buf);  // we haven't found identificator with matching name
     last_pos++;                     // => we create a new one
     return last_pos - 1;
 }

@@ -114,7 +114,9 @@ void Scanner::gc() { c = fgetc(fp); }
 
 /*/////////////////////////////////////////*/
 
-bool Scanner::isalpha(char c) { return (c >= 'a') && (c <= 'z'); }
+bool Scanner::isalpha(char c) {
+    return ((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'));
+}
 
 bool Scanner::isdigit(char c) { return (c >= '0') && (c <= '9'); }
 
@@ -144,11 +146,17 @@ Lex Scanner::get_lex() {
                 } else if(c == '/') {
                     gc();
                     if(c == '*') {
+                        gc();
                         curr_state = COMMENTARY;
                     } else {
-                        throw "Incorrect commentary use!";
+                        char curr_char[80];
+                        curr_char[0] = '/';
+                        curr_char[1] = '\0';
+                        j = look(curr_char, LimSymbols);
+                        return Lex(symbols[j], j);
                     }
-                } else if(c == ' ' || c == '\n') {
+                    break;
+                } else if(c == ' ' || c == '\n' || c == '\t') {
                     gc();
                     break;
                 } else {
@@ -208,15 +216,17 @@ Lex Scanner::get_lex() {
                 return Lex(LEX_STRING_DATA, (long long)strdup(buf));
                 break;
             case COMMENTARY:
-                while(c != '*') {
+                if(c == '*') {
+                    gc();
+                    if(c == '/') {
+                        gc();
+                        curr_state = INIT;
+                    }
+                } else if(c == EOF){
+                    throw "Incorrect use of commentary!";
+                } else {
                     gc();
                 }
-                gc();
-                if(c != '/') {
-                    curr_state = COMMENTARY;
-                    break;
-                }
-                curr_state = INIT;
                 break;
         }
     } while(true);

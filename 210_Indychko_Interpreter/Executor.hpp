@@ -7,7 +7,7 @@ class Executor {
 private:
     Lex curr_element;
 public:
-    void execute(Poliz& prog, const Parser& parser);
+    void execute(Poliz& prog,  const Parser& parser);
 };
 
 #endif
